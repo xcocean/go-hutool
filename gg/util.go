@@ -1,4 +1,4 @@
-package main
+package gg
 
 var singleton map[int]interface{}
 
