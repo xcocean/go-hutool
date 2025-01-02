@@ -176,3 +176,50 @@ func Str_replaceChar(input string, oldChar, newChar rune) string {
 func Str_replaceString(input, oldStr, newStr string) string {
 	return strings.ReplaceAll(input, oldStr, newStr)
 }
+
+// 字符串转大写
+func Str_toUpper(str string) string {
+	return strings.ToUpper(str)
+}
+
+// 字符串转小写
+func Str_toLower(str string) string {
+	return strings.ToLower(str)
+}
+
+// 查找子字符串在字符串中的位置，未找到返回 -1
+func Str_indexOf(str, substr string) int {
+	return strings.Index(str, substr)
+}
+
+// LastIndexOf 查找子字符串在字符串中的最后一个匹配位置，未找到返回 -1
+func Str_lastIndexOf(str, substr string) int {
+	return strings.LastIndex(str, substr)
+}
+
+// 从字符串中提取子字符串
+func Str_substring(str string, start, end int) string {
+	// 将字符串转换为 rune 切片以便正确处理 Unicode 字符
+	runes := []rune(str)
+
+	// 检查索引范围
+	if start < 0 || end > len(runes) || start > end {
+		panic("Invalid start or end index")
+	}
+
+	// 提取子字符串
+	return string(runes[start:end])
+}
+
+func Str_substring2(str string, start int) string {
+	// 将字符串转换为 rune 切片以便正确处理 Unicode 字符
+	runes := []rune(str)
+
+	// 检查索引范围
+	if start < 0 {
+		panic("Invalid start or end index")
+	}
+
+	// 提取子字符串
+	return string(runes[start:len(runes)])
+}

@@ -92,3 +92,12 @@ func TestStr_removeSpace2(t *testing.T) {
 	fmt.Printf("Original: %s\n", input)
 	fmt.Printf("After replacing '%s' with '%s': %s\n", oldStr, newStr, output)
 }
+
+func TestStr01(t *testing.T) {
+	// 示例：提取子字符串
+	str := "Hello, 世界！"
+	substr := Str_substring(str, 7, 9)
+	fmt.Printf("Original: %s\n", str)
+	fmt.Printf("Substring: %s\n", substr)
+	fmt.Printf("Substring: %s\n", Str_substring2(str, 5))
+}

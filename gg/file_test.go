@@ -189,3 +189,61 @@ func TestRead03(t *testing.T) {
 	println("len:", len(aar))
 	println("content: " + Str_toString(aar))
 }
+
+func TestRead04(t *testing.T) {
+	// 示例：读取文件内容并按行分割成字符串数组
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+		}
+	}()
+
+	file, err := os.Open("d:\\gg\\example99.txt")
+	if err != nil {
+		panic(fmt.Sprintf("Error opening file: %s", err))
+	}
+	defer file.Close()
+
+	fmt.Println("Opened file:", File_readLines2(file))
+}
+
+func TestRead05(t *testing.T) {
+	// 示例：读取文件所有数据并转换为字符串
+	file, err := os.Open("D:\\gg\\example99.txt")
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return
+	}
+	defer file.Close()
+
+	content, err := File_readString2(file)
+	if err != nil {
+		fmt.Println("Error reading file:", err)
+		return
+	}
+
+	fmt.Println("File content:")
+	fmt.Println(content)
+}
+
+func TestWrite01(t *testing.T) {
+	// 示例：将字符串以 UTF-8 编码写入文件（覆盖模式）
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+		}
+	}()
+
+	// 打开文件（如果文件不存在则创建）
+	file, err := os.OpenFile("D:\\gg\\example99.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		panic(fmt.Sprintf("Error opening file: %s", err))
+	}
+	defer file.Close()
+
+	// 写入内容
+	content := "Hello, World!\nThis is a UTF-8 encoded string."
+	File_writeUtf8String2(content, file)
+
+	fmt.Println("Content written to file successfully.")
+}

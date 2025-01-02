@@ -441,6 +441,33 @@ func File_delete(path string) {
 	}
 }
 
+// 删除文件或文件夹
+// <pre>
+//
+//	// 打开文件
+//	file, err := os.OpenFile("example.txt", os.O_WRONLY|os.O_CREATE, 0644)
+//	if err != nil {
+//		panic(fmt.Sprintf("Error opening file: %s", err))
+//	}
+//	// 删除文件
+//	FileDeleteByFile(file)
+//
+// </pre>
+func File_delete2(file *os.File) {
+	// 获取文件路径
+	path := file.Name()
+
+	// 关闭文件
+	if err := file.Close(); err != nil {
+		panic(fmt.Sprintf("Error closing file: %s", err))
+	}
+
+	// 删除文件
+	if err := os.Remove(path); err != nil {
+		panic(fmt.Sprintf("Error deleting file: %s", err))
+	}
+}
+
 // 清空文件夹，删除文件夹中的所有文件和子文件夹
 func File_clean(dirPath string) bool {
 	// 获取文件夹信息
@@ -1104,6 +1131,38 @@ func File_writeUtf8String(content, path string) {
 	}
 }
 
+// 将字符串以 UTF-8 编码写入文件（覆盖模式）,原内容将被覆盖
+// <pre>
+//
+//	// 打开文件（如果文件不存在则创建）
+//	file, err := os.OpenFile("D:\\gg\\example99.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+//	if err != nil {
+//		panic(fmt.Sprintf("Error opening file: %s", err))
+//	}
+//	defer file.Close()
+//
+//	// 写入内容
+//	content := "Hello, World!\nThis is a UTF-8 encoded string."
+//	File_writeUtf8String2(content, file)
+//
+// </pre>
+func File_writeUtf8String2(content string, dest *os.File) {
+	// 将文件截断为 0 字节（覆盖模式）
+	if err := dest.Truncate(0); err != nil {
+		panic(fmt.Sprintf("Error truncating file: %s", err))
+	}
+
+	// 将文件指针移动到开头
+	if _, err := dest.Seek(0, 0); err != nil {
+		panic(fmt.Sprintf("Error seeking file: %s", err))
+	}
+
+	// 将字符串写入文件
+	if _, err := dest.WriteString(content); err != nil {
+		panic(fmt.Sprintf("Error writing to file: %s", err))
+	}
+}
+
 // 将字符串以 UTF-8 编码追加写入文件
 func File_appendUtf8String(content, path string) {
 	Assert_isTure2(File_exist(path), "文件不存在: "+path)
@@ -1168,6 +1227,17 @@ func File_readBytes(filePath string) []byte {
 	return content
 }
 
+// 读取文件所有数据，异常用 panic 抛出
+func File_readBytes2(file *os.File) []byte {
+	// 读取文件所有数据
+	data, err := io.ReadAll(file)
+	if err != nil {
+		panic(fmt.Sprintf("Error reading file: %s", err))
+	}
+
+	return data
+}
+
 // 读取文件所有数据并转换为字符串
 func File_readString(path string) string {
 	Assert_isTure2(File_exist(path), "文件不存在: "+path)
@@ -1177,6 +1247,37 @@ func File_readString(path string) string {
 		panic(err)
 	}
 	return string(content)
+}
+
+// FileReadString 读取文件所有数据并转换为字符串
+// <pre>
+//
+//	file, err := os.Open("D:\\gg\\example99.txt")
+//	if err != nil {
+//		fmt.Println("Error opening file:", err)
+//		return
+//	}
+//	defer file.Close()
+//
+//	content, err := File_readString2(file)
+//	if err != nil {
+//		fmt.Println("Error reading file:", err)
+//		return
+//	}
+//
+//	fmt.Println("File content:")
+//	fmt.Println(content)
+//
+// </pre>
+func File_readString2(file *os.File) (string, error) {
+	// 读取文件所有数据
+	data, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+
+	// 将字节数据转换为字符串
+	return string(data), nil
 }
 
 // 读取文件内容并按行分割成字符串数组
@@ -1200,6 +1301,24 @@ func File_readLines(path string) []string {
 	// 检查扫描过程中是否有错误
 	if err := scanner.Err(); err != nil {
 		panic(err)
+	}
+
+	return lines
+}
+
+// 读取文件内容并按行分割成字符串数组，异常用 panic 抛出
+func File_readLines2(file *os.File) []string {
+	// 使用 bufio.Scanner 逐行读取文件
+	scanner := bufio.NewScanner(file)
+	var lines []string
+
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	// 检查扫描过程中是否有错误
+	if err := scanner.Err(); err != nil {
+		panic(fmt.Sprintf("Error reading file: %s", err))
 	}
 
 	return lines
