@@ -12,56 +12,56 @@ func assert(bol bool, msg string) {
 
 func TestBlank(t *testing.T) {
 	var str string
-	println(IsBlank(str) == true)
-	println(IsNotBlank(str) == false)
-	println(IsBlank(" \t\n") == true)
+	println(Str_isBlank(str) == true)
+	println(Str_isNotBlank(str) == false)
+	println(Str_isBlank(" \t\n") == true)
 
 	str = "  "
-	println(IsBlank(str) == true)
-	println(IsNotBlank(str) == false)
+	println(Str_isBlank(str) == true)
+	println(Str_isNotBlank(str) == false)
 
 }
 
 func TestEmpty(t *testing.T) {
 	var str string
-	println(IsEmpty(str) == true)
-	println(IsNotEmpty(str) == false)
-	println(IsEmpty(" \t\n") == true)
+	println(Str_isEmpty(str) == true)
+	println(Str_isNotEmpty(str) == false)
+	println(Str_isEmpty(" \t\n") == true)
 
 	str = "  "
-	println(IsEmpty(str) == false)
-	println(IsNotEmpty(str) == false)
+	println(Str_isEmpty(str) == false)
+	println(Str_isNotEmpty(str) == false)
 
 	str = "  "
-	println(IsEmpty(str) == false)
-	println(IsNotEmpty(str) == false)
+	println(Str_isEmpty(str) == false)
+	println(Str_isNotEmpty(str) == false)
 }
 
-func TestTrim(t *testing.T) {
-	assert(Trim("") == "", "Trim")
-	assert(Trim("     ") == "", "Trim")
-	assert(Trim("abc") == "abc", "Trim")
-	assert(Trim("    abc    ") == "abc", "Trim")
+func TestStr_trim(t *testing.T) {
+	assert(Str_Trim("") == "", "Str_trim")
+	assert(Str_Trim("     ") == "", "Str_trim")
+	assert(Str_Trim("abc") == "abc", "Str_trim")
+	assert(Str_Trim("    abc    ") == "abc", "Str_trim")
 
-	assert(TrimStart("    abc    ") == "abc    ", "TrimStart")
-	assert(TrimStart("abc    ") == "abc    ", "TrimStart")
-	assert(TrimEnd("abc    ") == "abc", "TrimEnd")
+	assert(Str_trimStart("    abc    ") == "abc    ", "Str_trimStart")
+	assert(Str_trimStart("abc    ") == "abc    ", "Str_trimStart")
+	assert(Str_trimEnd("abc    ") == "abc", "Str_trimEnd")
 }
 
 func TestWith(t *testing.T) {
-	assert(StartWith("asd", "as") == true, "StartWith")
-	assert(StartWith("asd", "1as") == false, "StartWith")
-	assert(StartWith("", "123") == false, "StartWith")
+	assert(Str_startWith("asd", "as") == true, "Str_startWith")
+	assert(Str_startWith("asd", "1as") == false, "Str_startWith")
+	assert(Str_startWith("", "123") == false, "Str_startWith")
 
-	assert(EndWith("asd", "sd") == true, "EndWith")
-	assert(EndWith("asd", "aasd") == false, "EndWith")
-	assert(EndWith("", "") == false, "EndWith")
+	assert(Str_endWith("asd", "sd") == true, "Str_endWith")
+	assert(Str_endWith("asd", "aasd") == false, "Str_endWith")
+	assert(Str_endWith("", "") == false, "Str_endWith")
 }
 
 func TestToString(t *testing.T) {
 	var arr = [5]int{10, 20, 30, 40, 50}
-	println(ToString(arr))
+	println(Str_toString(arr))
 
 	arr2 := [2]int{10, 20}
-	println(ToString(arr2))
+	println(Str_toString(arr2))
 }

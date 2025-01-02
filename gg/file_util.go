@@ -351,6 +351,19 @@ func File_newerThan2(filePath string, timeMillis int64) bool {
 	return fileModTime.Before(targetTime)
 }
 
+// 获取文件的父级目录
+func File_getParent(filePath string) string {
+	// 获取父级目录
+	parentDir := filepath.Dir(filePath)
+
+	// 如果父级目录为空，触发 panic
+	if parentDir == "" {
+		panic("无法获取父级目录")
+	}
+
+	return parentDir
+}
+
 // 创建文件及其父目录，如果文件存在则直接返回
 func File_touch(path string) *os.File {
 	// 如果文件已经存在，直接打开并返回
@@ -567,12 +580,24 @@ func File_copyFile(src, dst string) {
 	// 打开源文件
 	srcFile, err := os.Open(src)
 	if err != nil {
+		if os.IsNotExist(err) {
+			panic(fmt.Sprintf("文件不存在: %v", err))
+		}
 		panic(fmt.Sprintf("无法打开源文件: %v", err))
 	}
 	defer srcFile.Close()
 
+	if !File_exist(dst) {
+		mkdir := File_mkdir(dst)
+		mkdir.Sync()
+		mkdir.Close()
+	}
+
+	// 创建目标文件的完整路径
+	tagFile := filepath.Join(dst, File_getName(src))
+
 	// 创建目标文件
-	dstFile, err := os.Create(dst)
+	dstFile, err := os.Create(tagFile)
 	if err != nil {
 		panic(fmt.Sprintf("无法创建目标文件: %v", err))
 	}
@@ -607,8 +632,17 @@ func File_copyFile2(src, dst string, isOverride bool) {
 	}
 	defer srcFile.Close()
 
+	if !File_exist(dst) {
+		mkdir := File_mkdir(dst)
+		mkdir.Sync()
+		mkdir.Close()
+	}
+
+	// 创建目标文件的完整路径
+	tagFile := filepath.Join(dst, File_getName(src))
+
 	// 创建目标文件
-	dstFile, err := os.Create(dst)
+	dstFile, err := os.Create(tagFile)
 	if err != nil {
 		panic(fmt.Sprintf("无法创建目标文件: %v", err))
 	}
@@ -788,7 +822,7 @@ func File_rename(filePath, newName string, isOverride bool) string {
 	dir := filepath.Dir(filePath)
 
 	// 构建新路径
-	newPath := filepath.Join(dir, newName)
+	newPath := filepath.Join(dir, File_getName(filePath))
 
 	// 如果目标路径已存在
 	if _, err := os.Stat(newPath); err == nil {

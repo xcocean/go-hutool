@@ -9,7 +9,7 @@ import (
 
 func TestFile(t *testing.T) {
 	println(IsWindows())
-	println(ToString(File_ls("d:\\temp")))
+	println(Str_toString(File_ls("d:\\temp")))
 	println(File_isEmpty("d:\\temp"))
 	println(File_isDirEmpty("d:\\temp"))
 }
