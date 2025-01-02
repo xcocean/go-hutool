@@ -15,7 +15,7 @@ func GetSingleton(key int) interface{} {
 	val := singleton[key]
 	if val == nil {
 		if key == Constant_Snowflake {
-			snowflake, _ := NewSnowflake()
+			snowflake := Id_NewSnowflake()
 			singleton[key] = snowflake
 			return snowflake
 		} else if key == Constant_ObjectId {

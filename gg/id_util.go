@@ -4,7 +4,6 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"math/rand"
 	"os"
@@ -37,30 +36,30 @@ type Snowflake struct {
 	sequence     int64 // 序列号
 }
 
-// NewSnowflake 创建一个 Snowflake 实例
-func NewSnowflake() (*Snowflake, error) {
-	return NewSnowflake2(1, 1)
+// 创建一个 Snowflake 实例
+func Id_NewSnowflake() *Snowflake {
+	return Id_NewSnowflake2(1, 1)
 }
 
-// NewSnowflake2 创建一个 Snowflake 实例
+// 创建一个 Snowflake 实例
 //
-//	snowflake2, _ := NewSnowflake2(1, 1)
+//	snowflake2 := Id_NewSnowflake2(1, 1)
 //	println(snowflake2.NextID())
 //	println(snowflake2.NextID())
 //	println(snowflake2.ParseTimestamp(snowflake2.NextID()).Unix())
-func NewSnowflake2(workerID, datacenterID int64) (*Snowflake, error) {
+func Id_NewSnowflake2(workerID, datacenterID int64) *Snowflake {
 	if workerID < 0 || workerID > workerIDMax {
-		return nil, errors.New("workerId 超出范围")
+		panic(fmt.Sprintf("workerId 超出范围"))
 	}
 	if datacenterID < 0 || datacenterID > datacenterIDMax {
-		return nil, errors.New("datacenterId 超出范围")
+		panic(fmt.Sprintf("datacenterId 超出范围"))
 	}
 	return &Snowflake{
 		lastStamp:    0,
 		workerID:     workerID,
 		datacenterID: datacenterID,
 		sequence:     0,
-	}, nil
+	}
 }
 
 // NextIDTo36 生成下一个ID 转为36进制字符串 --> 40w28qcxz402  （长度等于12）
@@ -118,7 +117,7 @@ func (s *Snowflake) ParseTimestamp(id int64) time.Time {
 }
 
 // 获取 Snowflake 单例对象
-func GetSnowflake() *Snowflake {
+func Id_getSnowflake() *Snowflake {
 	getSingleton := GetSingleton(Constant_Snowflake)
 	return getSingleton.(*Snowflake)
 }
@@ -148,7 +147,8 @@ func NewObjectId() ObjectId {
 	id[8] = byte(pid)
 
 	// 3 字节随机数
-	rand.Seed(time.Now().UnixNano())
+	// rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 	random := rand.Uint32()
 	id[9] = byte(random >> 16)
 	id[10] = byte(random >> 8)
@@ -170,8 +170,8 @@ func (id ObjectId) Next() string {
 }
 
 // 获取 ObjectId 单例
-// GetObjectId().Next() --> 24长度字符串
-func GetObjectId() ObjectId {
+// Id_ObjectId().Next() --> 24长度字符串
+func Id_ObjectId() ObjectId {
 	return GetSingleton(Constant_ObjectId).(ObjectId)
 }
 
@@ -181,7 +181,7 @@ func GetObjectId() ObjectId {
 type UUID [16]byte
 
 // 生成一个 UUID --> b2b26b89-4fd1-405d-945f-5f70f9063422
-func RandomUUID() string {
+func Id_RandomUUID() string {
 	var uuid UUID
 	// 生成 16 字节的随机数
 	rand.Read(uuid[:])
@@ -202,7 +202,7 @@ func RandomUUID() string {
 	return string(buf)
 }
 
-func FastUUID() string {
+func Id_FastUUID() string {
 	uuid := make([]byte, 16)
 	rand.Read(uuid)
 	// 设置版本为4
@@ -216,17 +216,16 @@ func FastUUID() string {
 const DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 // 随机生成一个 21 位的字符串
-func NanoId() string {
-	return NanoIdLength(21)
+func Id_NanoId() string {
+	return Id_NanoIdLength(21)
 }
 
 // 随机生成一个指定长度的字符串
-func NanoIdLength(length int8) string {
+func Id_NanoIdLength(length int8) string {
 	if length <= 0 {
 		panic("length 必须大于 0")
 	}
-
-	rand.Seed(time.Now().UnixNano())
+	rand.NewSource(time.Now().UnixNano())
 	result := make([]byte, length)
 	for i := range result {
 		randomIndex := rand.Intn(len(DEFAULT_ALPHABET))
