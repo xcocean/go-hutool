@@ -12,9 +12,19 @@ import (
 	"time"
 )
 
-// IsWindows 判断当前是否为Windows环境
+// 判断当前是否为Windows环境
 func IsWindows() bool {
 	return runtime.GOOS == "windows"
+}
+
+// 判断当前系统是否是 Linux
+func IsLinux() bool {
+	return runtime.GOOS == "linux"
+}
+
+// 判断当前系统是否是 macOS
+func IsMac() bool {
+	return runtime.GOOS == "darwin"
 }
 
 // 列出指定路径下的目录和文件
@@ -818,27 +828,30 @@ func copyDir(src, dst string) error {
 // 修改文件或目录的文件名，支持覆盖选项
 // File_rename("d:\\gg\\example2.txt", "example2-222.txt", false)
 func File_rename(filePath, newName string, isOverride bool) string {
-	// 获取文件或目录的父目录
-	dir := filepath.Dir(filePath)
+	// 检查原文件或目录是否存在
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		panic(fmt.Sprintf("文件或目录不存在: %s", filePath))
+	}
 
-	// 构建新路径
-	newPath := filepath.Join(dir, File_getName(filePath))
+	// 获取原文件或目录的父目录
+	dir := filepath.Dir(filePath)
+	// 构造新的文件或目录路径
+	newPath := filepath.Join(dir, newName)
 
 	// 如果目标路径已存在
 	if _, err := os.Stat(newPath); err == nil {
 		if !isOverride {
-			panic(fmt.Sprintf("目标路径已存在且不允许覆盖: %s", newPath))
+			panic(fmt.Sprintf("目标文件或目录已经存在: %s", newPath))
 		}
-
-		// 如果目标路径是目录，递归删除
+		// 如果允许覆盖，则删除目标文件或目录
 		if err := os.RemoveAll(newPath); err != nil {
-			panic(fmt.Sprintf("无法删除目标路径: %v", err))
+			panic(fmt.Sprintf("删除现有目标失败: %s", err))
 		}
 	}
 
 	// 重命名文件或目录
 	if err := os.Rename(filePath, newPath); err != nil {
-		panic(fmt.Sprintf("无法重命名文件或目录: %v", err))
+		panic(fmt.Sprintf("重命名失败: %s", err))
 	}
 
 	return newPath
@@ -846,6 +859,7 @@ func File_rename(filePath, newName string, isOverride bool) string {
 
 // 判断给定路径是否为目录
 func File_isDirectory(path string) bool {
+	Assert_notEmpty2(path, "文件不能为空")
 	// 获取路径信息
 	fileInfo, err := os.Stat(path)
 	if err != nil {
@@ -858,6 +872,7 @@ func File_isDirectory(path string) bool {
 
 // 判断给定的 File 对象是否为目录
 func File_isDirectory2(file *os.File) bool {
+	Assert_notNil2(file, "文件不能为空")
 	// 获取文件信息
 	fileInfo, err := file.Stat()
 	if err != nil {
@@ -870,6 +885,7 @@ func File_isDirectory2(file *os.File) bool {
 
 // 判断给定路径是否为文件
 func File_isFile(path string) bool {
+	Assert_notEmpty2(path, "文件路径不能为空")
 	// 获取路径信息
 	fileInfo, err := os.Stat(path)
 	if err != nil {
@@ -882,6 +898,7 @@ func File_isFile(path string) bool {
 
 // 判断给定的 File 对象是否为文件
 func File_isFile2(file *os.File) bool {
+	Assert_notNil2(file, "文件不能为空")
 	// 获取文件信息
 	fileInfo, err := file.Stat()
 	if err != nil {
@@ -895,6 +912,8 @@ func File_isFile2(file *os.File) bool {
 // 比较两个文件内容是否相同，首先比较长度，长度一致再比较内容
 // println(File_contentEquals("d:\\gg\\example99.txt", "d:\\gg2\\example99.txt"))
 func File_contentEquals(file1, file2 string) bool {
+	Assert_notEmpty2(file1, "文件1不能为空")
+	Assert_notEmpty2(file2, "文件2不能为空")
 	// 获取 file1 的文件信息
 	open1, err := os.Open(file1)
 	if err != nil {
@@ -902,7 +921,7 @@ func File_contentEquals(file1, file2 string) bool {
 	}
 	defer open1.Close()
 
-	open2, err := os.Open(file1)
+	open2, err := os.Open(file2)
 	if err != nil {
 		panic(fmt.Sprintf("无法获取 file2 的文件信息: %v", err))
 	}
@@ -912,6 +931,8 @@ func File_contentEquals(file1, file2 string) bool {
 
 // 比较两个文件内容是否相同，首先比较长度，长度一致再比较内容
 func File_contentEquals2(file1, file2 *os.File) bool {
+	Assert_notNil2(file1, "文件1不能为空")
+	Assert_notNil2(file2, "文件2不能为空")
 	// 获取 file1 的文件信息
 	file1Info, err := file1.Stat()
 	if err != nil {
@@ -976,6 +997,7 @@ func File_contentEquals2(file1, file2 *os.File) bool {
 }
 
 func File_isModified(file string, lastModifyTime int64) bool {
+	Assert_notEmpty2(file, "文件不能为空")
 	// 获取文件的最后修改时间
 	open, err := os.Open(file)
 	if err != nil {
@@ -988,6 +1010,7 @@ func File_isModified(file string, lastModifyTime int64) bool {
 
 // 判断文件是否被修改
 func File_isModified2(file *os.File, lastModifyTime int64) bool {
+	Assert_notNil2(file, "文件不能为空")
 	// 获取文件的最后修改时间
 	fileInfo, err := file.Stat()
 	if err != nil {
@@ -1000,6 +1023,7 @@ func File_isModified2(file *os.File, lastModifyTime int64) bool {
 // 获取文件的后缀名（不带点号）
 // println(File_getSuffix("d:\\gg\\example99.txt")) --> txt
 func File_getSuffix(file string) string {
+	Assert_notEmpty2(file, "文件不能为空")
 	open, err := os.Open(file)
 	if err != nil {
 		panic(fmt.Sprintf("无法获取文件信息: %v", err))
@@ -1010,6 +1034,7 @@ func File_getSuffix(file string) string {
 // 获取文件的后缀名（不带点号）
 // println(File_getSuffix("d:\\gg\\example99.txt")) --> txt
 func File_getSuffix2(file *os.File) string {
+	Assert_notNil2(file, "文件不能为空")
 	// 获取文件名
 	fileName := file.Name()
 
@@ -1027,6 +1052,7 @@ func File_getSuffix2(file *os.File) string {
 // 从文件路径中提取文件名
 // println(File_getName("d:\\gg\\example99.txt")) --> example99.txt
 func File_getName(filePath string) string {
+	Assert_notEmpty2(filePath, "文件路径不能为空")
 	// 获取文件名
 	fileName := filepath.Base(filePath)
 
@@ -1041,6 +1067,7 @@ func File_getName(filePath string) string {
 // 从文件名中提取主文件名（去掉后缀名的部分）
 // println(File_getPrefix("d:\\gg\\example99.txt")) --> example99
 func File_getPrefix(fileName string) string {
+	Assert_notEmpty2(fileName, "文件路径不能为空")
 	// 去除文件名两端的空格
 	fileName = strings.TrimSpace(fileName)
 
@@ -1056,6 +1083,7 @@ func File_getPrefix(fileName string) string {
 
 // 将字符串以 UTF-8 编码写入文件（覆盖模式），原内容将被覆盖
 func File_writeUtf8String(content, path string) {
+	Assert_isTure2(File_exist(path), "文件不存在: "+path)
 	// 打开文件（覆盖模式）
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -1078,6 +1106,7 @@ func File_writeUtf8String(content, path string) {
 
 // 将字符串以 UTF-8 编码追加写入文件
 func File_appendUtf8String(content, path string) {
+	Assert_isTure2(File_exist(path), "文件不存在: "+path)
 	// 打开文件（追加模式）
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -1100,6 +1129,7 @@ func File_appendUtf8String(content, path string) {
 
 // 将字节数组写入文件（覆盖模式）
 func File_writeBytes(data []byte, path string) {
+	Assert_isTure2(File_exist(path), "文件不存在: "+path)
 	// 打开文件（覆盖模式）
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
@@ -1118,4 +1148,71 @@ func File_writeBytes(data []byte, path string) {
 	if err != nil {
 		panic(fmt.Sprintf("无法刷新文件内容: %v", err))
 	}
+}
+
+// 读取文件所有数据
+func File_readBytes(filePath string) []byte {
+	Assert_isTure2(File_exist(filePath), "文件不存在: "+filePath)
+	// 打开文件
+	file, err := os.Open(filePath)
+	if err != nil {
+		panic(err)
+	}
+	// 记得在函数结束时关闭文件
+	defer file.Close()
+
+	content, err := io.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	return content
+}
+
+// 读取文件所有数据并转换为字符串
+func File_readString(path string) string {
+	Assert_isTure2(File_exist(path), "文件不存在: "+path)
+	// 读取文件内容
+	content, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return string(content)
+}
+
+// 读取文件内容并按行分割成字符串数组
+func File_readLines(path string) []string {
+	// 打开文件
+	file, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// 创建一个字符串切片来存储文件内容
+	var lines []string
+
+	// 使用 bufio.Scanner 逐行读取文件内容
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	// 检查扫描过程中是否有错误
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	return lines
+}
+
+// 获取当前应用程序的路径
+func File_getAppPath() string {
+	// 获取可执行文件的绝对路径
+	exePath, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	// 获取所在目录
+	appPath := filepath.Dir(exePath)
+	return appPath
 }

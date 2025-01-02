@@ -5,7 +5,6 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"os"
 	"strconv"
 	"sync"
@@ -129,7 +128,7 @@ func Id_getSnowflake() *Snowflake {
 // ObjectId 是一个 12 字节的标识符
 type ObjectId [12]byte
 
-// NewObjectId 生成一个新的 ObjectId
+// 生成一个新的 ObjectId
 func NewObjectId() ObjectId {
 	var id ObjectId
 
@@ -147,9 +146,7 @@ func NewObjectId() ObjectId {
 	id[8] = byte(pid)
 
 	// 3 字节随机数
-	// rand.Seed(time.Now().UnixNano())
-	rand.NewSource(time.Now().UnixNano())
-	random := rand.Uint32()
+	random := Random_uint32()
 	id[9] = byte(random >> 16)
 	id[10] = byte(random >> 8)
 	id[11] = byte(random)
@@ -164,7 +161,7 @@ func getMachineHash() []byte {
 	return hash[:]
 }
 
-// 获取一个 objectId 24长度字符串
+// 获取一个 objectId 24长度字符串 --> 6776672d1370e04ba81f6922
 func (id ObjectId) Next() string {
 	return hex.EncodeToString(id[:])
 }
@@ -177,14 +174,10 @@ func Id_ObjectId() ObjectId {
 
 // MongoDB 的 ObjectId 算法 end------------------------------------------------------------------------------------------
 
-// UUID 是一个 16 字节的标识符
-type UUID [16]byte
-
-// 生成一个 UUID --> b2b26b89-4fd1-405d-945f-5f70f9063422
+// 生成一个uuid --> b2b26b89-4fd1-405d-945f-5f70f9063422
 func Id_RandomUUID() string {
-	var uuid UUID
-	// 生成 16 字节的随机数
-	rand.Read(uuid[:])
+	uuid := Random_randomBytes(16)
+
 	// 设置版本号（第 7 字节的高 4 位为 4）
 	uuid[6] = (uuid[6] & 0x0f) | 0x40
 	// 设置变体（第 9 字节的高 2 位为 10）
@@ -203,8 +196,7 @@ func Id_RandomUUID() string {
 }
 
 func Id_FastUUID() string {
-	uuid := make([]byte, 16)
-	rand.Read(uuid)
+	uuid := Random_randomBytes(16)
 	// 设置版本为4
 	uuid[6] = (uuid[6] & 0x0f) | 0x40
 	// 设置变体为RFC 4122
@@ -213,23 +205,15 @@ func Id_FastUUID() string {
 	return fmt.Sprintf("%x%x%x%x", uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:])
 }
 
-const DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 // 随机生成一个 21 位的字符串
 func Id_NanoId() string {
 	return Id_NanoIdLength(21)
 }
 
 // 随机生成一个指定长度的字符串
-func Id_NanoIdLength(length int8) string {
+func Id_NanoIdLength(length int) string {
 	if length <= 0 {
 		panic("length 必须大于 0")
 	}
-	rand.NewSource(time.Now().UnixNano())
-	result := make([]byte, length)
-	for i := range result {
-		randomIndex := rand.Intn(len(DEFAULT_ALPHABET))
-		result[i] = DEFAULT_ALPHABET[randomIndex]
-	}
-	return string(result)
+	return Random_randomString(length)
 }

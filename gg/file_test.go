@@ -133,7 +133,7 @@ func Test22(t *testing.T) {
 }
 
 func Test23(t *testing.T) {
-	println(File_rename("d:\\gg\\example2.txt", "example2-222.txt", false))
+	println(File_rename("d:\\gg\\example2-111.txt", "example99.txt", true))
 }
 
 func Test24(t *testing.T) {
@@ -166,4 +166,26 @@ func Test30(t *testing.T) {
 
 func Test31(t *testing.T) {
 	File_writeBytes([]byte("66666666666"), "d:\\gg\\example99.txt")
+}
+
+func Test32(t *testing.T) {
+	println(File_getAppPath())
+}
+
+func TestRead01(t *testing.T) {
+	bytes := File_readBytes("d:\\gg\\example99.txt")
+	println("len:", len(bytes))
+	println("content: " + string(bytes))
+}
+
+func TestRead02(t *testing.T) {
+	str := File_readString("d:\\gg\\example99.txt")
+	println("len:", len(str))
+	println("content: " + str)
+}
+
+func TestRead03(t *testing.T) {
+	aar := File_readLines("d:\\gg\\example99.txt")
+	println("len:", len(aar))
+	println("content: " + Str_toString(aar))
 }

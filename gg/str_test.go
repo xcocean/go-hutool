@@ -1,6 +1,7 @@
 package gg
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -64,4 +65,30 @@ func TestToString(t *testing.T) {
 
 	arr2 := [2]int{10, 20}
 	println(Str_toString(arr2))
+}
+
+func TestStr_removeSpace(t *testing.T) {
+	// 示例：删除字符串中的空白字符
+	input := "Hello, \nWorld!\t This is a test."
+	output := Str_removeSpace(input)
+	fmt.Printf("Original: %q\n", input)
+	fmt.Printf("After removal: %q\n", output)
+}
+
+func TestStr_removeSpace2(t *testing.T) {
+	// 示例：替换字符
+	input := "Hello, World!"
+	oldChar := 'o'
+	newChar := 'x'
+	output := Str_replaceChar(input, oldChar, newChar)
+	fmt.Printf("Original: %s\n", input)
+	fmt.Printf("After replacing '%c' with '%c': %s\n", oldChar, newChar, output)
+
+	// 示例：替换子字符串
+	input = "Hello, World!"
+	oldStr := "World"
+	newStr := "Go"
+	output = Str_replaceString(input, oldStr, newStr)
+	fmt.Printf("Original: %s\n", input)
+	fmt.Printf("After replacing '%s' with '%s': %s\n", oldStr, newStr, output)
 }

@@ -20,3 +20,7 @@ func TestUUID(t *testing.T) {
 	println(Id_NanoId())
 	println(Id_NanoIdLength(5))
 }
+
+func TestId01(t *testing.T) {
+	println(NewObjectId().Next())
+}

@@ -5,6 +5,8 @@ var singleton map[int]interface{}
 const (
 	Constant_Snowflake = 1
 	Constant_ObjectId  = 2
+
+	DEFAULT_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
 func init() {

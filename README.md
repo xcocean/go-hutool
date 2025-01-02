@@ -4,11 +4,14 @@ go版的工具集，java的hutool，适合java体质的go开发者、go开发新
 
 ## 安装
 
+要求go版本>=1.18
+
 ```shell
 go get -u github.com/xcocean/go-hutool
 ```
 
 ## 使用
+
 ```go
 package main
 

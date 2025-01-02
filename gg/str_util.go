@@ -2,6 +2,7 @@ package gg
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -149,4 +150,29 @@ func Str_utf8Str(byt []byte) string {
 
 func Str_toString(obj interface{}) string {
 	return fmt.Sprintf("%v", obj)
+}
+
+// 删除字符串中的所有空白字符
+func Str_removeSpace(str string) string {
+	// 编译正则表达式，匹配所有空白字符
+	re := regexp.MustCompile(`\s+`)
+	// 将匹配到的空白字符替换为空字符串
+	return re.ReplaceAllString(str, "")
+}
+
+// 替换字符串中指定的字符
+func Str_replaceChar(input string, oldChar, newChar rune) string {
+	// 将字符串转换为 rune 切片以便处理 Unicode 字符
+	inputRunes := []rune(input)
+	for i, ch := range inputRunes {
+		if ch == oldChar {
+			inputRunes[i] = newChar
+		}
+	}
+	return string(inputRunes)
+}
+
+// 替换字符串中指定的子字符串
+func Str_replaceString(input, oldStr, newStr string) string {
+	return strings.ReplaceAll(input, oldStr, newStr)
 }
